@@ -38,7 +38,8 @@ skill's own directory. See SKILL.md for why.
       "amount": 3500,
       "type": "fixed",
       "recurrence": "monthly",
-      "nextDate": "2026-09-15"
+      "nextDate": "2026-09-15",
+      "endDate": "2027-02-15"
     }
   ],
   "savingsRule": {
@@ -56,6 +57,14 @@ skill's own directory. See SKILL.md for why.
 - `expenses[].type`: `fixed` (loan dues, rent, subscriptions — same amount
   each cycle) or `variable` (groceries, discretionary — treat as an
   estimate, not exact).
+- `expenses[].endDate` (optional): the date of the final occurrence for an
+  expense with a fixed payoff, e.g. an installment loan. After this date
+  the entry no longer recurs and should be excluded from projections. Omit
+  for expenses with no defined end (rent, subscriptions, etc.). When the
+  user tells you how many installments are paid vs. total (e.g. "1 of 9"),
+  compute `endDate` from `nextDate` and the remaining installment count at
+  the entry's recurrence interval, and store the result here rather than
+  making the user do the math.
 - `savingsRule.mode`: `minBalance` (never let projected balance go below
   `minBalance`) or `percentOfIncome` (set aside that % of each income entry
   before it counts as spendable — compute an effective `minBalance`

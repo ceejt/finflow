@@ -11,7 +11,9 @@ numbers — only explain them.
 2. Starting from today, walk forward day by day. For each day:
    - Add any income entries whose recurrence lands on that day.
    - Subtract any expense entries (fixed or variable-as-estimate) whose
-     recurrence lands on that day.
+     recurrence lands on that day — except entries whose `endDate` (see
+     schema.md) has already passed as of that day; a paid-off installment
+     loan stops recurring after its final payment.
    - Running balance = previous day's balance + today's net.
    (If the user hasn't given a current balance, ask for it once, or note
    the projection is relative/directional rather than absolute.)
