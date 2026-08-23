@@ -2,14 +2,9 @@
 """
 finflow: deterministic cash-flow projection over ~/.finflow/profile.json.
 
-Pure stdlib, no network calls, no LLM. This is the "math engine" half of
-FinFlow's design — it never guesses, never explains, just computes. The
-conversational advisor (the Claude Code skill) is the reasoning layer on
-top of this; this script is what it *should* be calling instead of doing
-the arithmetic in-context.
-
-Profile schema: see ../references/schema.md. This script does not modify
-the profile — use `finflow update` (the skill) or edit the JSON directly.
+Pure stdlib. No network calls, no LLM. This computes; the Claude Code
+skill explains. See ../references/schema.md for the profile format.
+Does not modify the profile: use `finflow update` or edit the JSON.
 """
 
 import argparse
@@ -37,7 +32,7 @@ def parse_date(s):
 
 
 def add_months(d, n):
-    """Add n calendar months to d, clamping the day to the target month's length."""
+    """Add n months to d, clamped to the target month's length."""
     month_index = d.month - 1 + n
     year = d.year + month_index // 12
     month = month_index % 12 + 1
@@ -49,7 +44,7 @@ RECURRENCE_STEP_DAYS = {"weekly": 7, "biweekly": 14}
 
 
 def occurrences(entry, window_start, window_end):
-    """Yield every date `entry` fires on within [window_start, window_end]."""
+    """Yield every date `entry` fires within [window_start, window_end]."""
     next_date = parse_date(entry["nextDate"])
     recurrence = entry["recurrence"]
     end_date = parse_date(entry["endDate"]) if entry.get("endDate") else None
@@ -63,7 +58,7 @@ def occurrences(entry, window_start, window_end):
     if recurrence in RECURRENCE_STEP_DAYS:
         step = RECURRENCE_STEP_DAYS[recurrence]
         d = next_date
-        # fast-forward to the first occurrence on/after window_start
+        # skip ahead to the first occurrence on/after window_start
         if d < window_start:
             missed = (window_start - d).days
             d = d + timedelta(days=(missed // step) * step)
@@ -101,8 +96,8 @@ def convert(amount, currency, profile_currency, rates):
 
 
 def build_ledger(profile, start_date, days, start_balance, rates):
-    """Return (ledger, final_balance). ledger is a list of
-    (date, [(label, signed_amount_in_profile_currency, note)], running_balance)."""
+    """Return (ledger, final_balance). ledger holds
+    (date, [(label, signed_amount, note)], running_balance) per event day."""
     window_end = start_date + timedelta(days=days)
     profile_currency = profile["currency"]
 
@@ -131,14 +126,13 @@ def build_ledger(profile, start_date, days, start_balance, rates):
 
 
 def effective_buffer(profile, ledger, start_balance):
-    """Compute the safety buffer to hold against, per savingsRule.mode."""
+    """Compute the safety buffer per savingsRule.mode."""
     rule = profile.get("savingsRule", {})
     mode = rule.get("mode")
     if mode == "minBalance":
         return rule.get("minBalance") or 0
     if mode == "percentOfIncome":
-        # Reserve pct of every income event seen so far; approximate as a
-        # constant using the most recent running reserve at query time.
+        # Sum the reserved percent of every income event in the ledger.
         pct = (rule.get("percentOfIncome") or 0) / 100
         reserve = 0
         for d, events, _ in ledger:
@@ -186,10 +180,8 @@ def cmd_afford(args):
     buffer_ = effective_buffer(profile, ledger, args.balance)
 
     safe_dates = []
-    running = args.balance
-    idx = 0
-    # Walk every calendar day, applying ledger events as they occur, to find
-    # the earliest day the affordability check passes and stays passed.
+    # Walk every day, applying ledger events as they land, and record
+    # each day the affordability check passes.
     events_by_date = {}
     for d, events, balance in ledger:
         events_by_date[d] = balance
@@ -207,7 +199,7 @@ def cmd_afford(args):
     if not safe_dates:
         print("No safe date found before the deadline.")
         return
-    # group consecutive safe dates into windows
+    # Group consecutive safe dates into windows.
     windows = []
     window_start = safe_dates[0]
     prev = safe_dates[0]

@@ -1,6 +1,6 @@
 # FinFlow Profile Schema
 
-The profile always lives at `~/.finflow/profile.json` — never inside the
+The profile always lives at `~/.finflow/profile.json`, never inside the
 skill's own directory. See SKILL.md for why.
 
 ```json
@@ -11,7 +11,7 @@ skill's own directory. See SKILL.md for why.
   "updatedAt": "2026-08-23",
   "income": [
     {
-      "label": "InstaCode salary",
+      "label": "Day job salary",
       "amount": 25000,
       "currency": "PHP",
       "recurrence": "monthly",
@@ -54,8 +54,8 @@ skill's own directory. See SKILL.md for why.
 
 - `recurrence`: one of `once`, `weekly`, `biweekly`, `monthly`. A `once`
   entry does not repeat after its `nextDate`/date passes.
-- `expenses[].type`: `fixed` (loan dues, rent, subscriptions — same amount
-  each cycle) or `variable` (groceries, discretionary — treat as an
+- `expenses[].type`: `fixed` (loan dues, rent, subscriptions: same amount
+  each cycle) or `variable` (groceries, discretionary: treat as an
   estimate, not exact).
 - `expenses[].endDate` (optional): the date of the final occurrence for an
   expense with a fixed payoff, e.g. an installment loan. After this date
@@ -67,7 +67,7 @@ skill's own directory. See SKILL.md for why.
   making the user do the math.
 - `savingsRule.mode`: `minBalance` (never let projected balance go below
   `minBalance`) or `percentOfIncome` (set aside that % of each income entry
-  before it counts as spendable — compute an effective `minBalance`
+  before it counts as spendable; compute an effective `minBalance`
   equivalent from this when projecting; see
   [projection.md](projection.md)). Only one of `minBalance` /
   `percentOfIncome` is populated depending on mode; the other stays `null`.
@@ -76,7 +76,7 @@ skill's own directory. See SKILL.md for why.
   native currency (e.g. a foreign-client income source paid in USD while
   the profile's default `currency` is PHP). Do not convert amounts before
   saving. Conversion to the profile's default `currency` happens only at
-  query time — see [projection.md](projection.md#cross-currency-entries) —
+  query time (see [projection.md](projection.md#cross-currency-entries)),
   so the stored number always reflects what was actually earned/owed, not
   a stale converted snapshot. If an entry's `currency` is omitted, it
   defaults to the profile's top-level `currency`.

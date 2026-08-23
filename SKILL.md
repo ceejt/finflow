@@ -23,16 +23,16 @@ uses it to project cash flow and answer real questions: afford this now?
 when's the safest window to buy? will this loan due date and this purchase
 collide?
 
-Detailed guidance is split by task — read only what the current call needs:
+Detailed guidance is split by task: read only what the current call needs.
 
-- [references/schema.md](references/schema.md) — the profile JSON schema (source of truth for field names)
-- [references/onboarding.md](references/onboarding.md) — first-run question flow
-- [references/projection.md](references/projection.md) — cash-flow projection algorithm
-- [references/update.md](references/update.md) — editing an existing profile
+- [references/schema.md](references/schema.md): the profile JSON schema (source of truth for field names)
+- [references/onboarding.md](references/onboarding.md): first-run question flow
+- [references/projection.md](references/projection.md): cash-flow projection algorithm
+- [references/update.md](references/update.md): editing an existing profile
 
 ## The one hard rule: profile location
 
-The profile is **`~/.finflow/profile.json`** — always that path, always
+The profile is **`~/.finflow/profile.json`**, always that path, always
 outside this skill's own directory. Never write it inside
 `~/.claude/skills/finflow/` or any other git-tracked path.
 
@@ -51,8 +51,8 @@ repo means:
   Reasoning over the data is the whole feature; persistence is strictly
   local. The one exception is a live exchange-rate lookup for entries in a
   currency other than the profile's default (see
-  [references/projection.md](references/projection.md#cross-currency-entries))
-  — that is a public, read-only rate fetch, never a transmission of the
+  [references/projection.md](references/projection.md#cross-currency-entries)):
+  that is a public, read-only rate fetch, never a transmission of the
   user's financial data.
 
 If `~/.finflow/` does not exist, create it (`mkdir -p`) before writing the
@@ -64,13 +64,13 @@ profile.
 
 2. **No profile found → onboarding.** Follow
    [references/onboarding.md](references/onboarding.md). Don't demand every
-   field up front if the user only has partial info — a single income
+   field up front if the user only has partial info: a single income
    source and rough expenses is enough to start; more can be added later
    via `finflow update`.
 
 3. **Profile found, plain `finflow` call → act as advisor.** Load the
    profile, then run the projection **by calling `scripts/finflow.py`**
-   (see below) rather than computing the day-by-day balance by hand — the
+   (see below) rather than computing the day-by-day balance by hand. The
    script is a deterministic, tested implementation of the algorithm in
    [references/projection.md](references/projection.md); use it as the
    arithmetic source of truth and add only the natural-language
@@ -84,11 +84,11 @@ profile.
    - If the user gave no specific question, run `finflow.py project
      --days 30 [--balance ...] [--rate CUR=RATE ...]`, summarize upcoming
      loan/bill dues from its output, and flag any `[BELOW BUFFER]` day.
-   - Never let the profile's declared safety buffer be silently ignored —
+   - Never let the profile's declared safety buffer be silently ignored:
      the script already enforces `projected_balance - cost >=
      safety_buffer`; don't override or second-guess its arithmetic.
    - The script needs a starting balance (`--balance`) to give absolute
-     numbers — ask the user for their current balance if they haven't
+     numbers. Ask the user for their current balance if they haven't
      given one recently, or fall back to a relative/directional answer
      (`--balance 0`) and say so explicitly.
 
@@ -102,18 +102,18 @@ python3 scripts/finflow.py afford --cost 9000 [--deadline YYYY-MM-DD] --balance 
 
 - `--rate CURRENCY=RATE` (repeatable) is required for every foreign
   currency present among the entries that fall inside the projection
-  window (see [references/projection.md](references/projection.md#cross-currency-entries))
-  — the script will error out naming exactly which rate is missing rather
+  window (see [references/projection.md](references/projection.md#cross-currency-entries)).
+  The script will error out naming exactly which rate is missing rather
   than silently guessing. Get the rate live or ask the user.
 - Pure stdlib, no dependencies, no network calls of its own. It only
-  reads `~/.finflow/profile.json` — it never writes to it.
+  reads `~/.finflow/profile.json`; it never writes to it.
 
 4. **`finflow update`** (or the user says "update my profile" / "add an
    expense" / etc.) → follow [references/update.md](references/update.md).
 
 5. **Never commit the profile.** If this skill folder is ever inside a git
    repo the user is committing from, and `~/.finflow/` is somehow not
-   outside it, stop and warn the user rather than proceeding — this
+   outside it, stop and warn the user rather than proceeding. This
    violates the local-first design.
 
 ## Verification

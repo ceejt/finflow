@@ -20,7 +20,7 @@ In Claude Code, just talk about your finances or invoke the skill directly:
 finflow
 ```
 
-**First run** onboards you: currency, income sources, recurring expenses and loan dues, and a savings rule (either a minimum balance to never dip below, or a percentage of income to set aside). It saves your answers to `~/.finflow/profile.json` — outside this repo, on your own machine.
+**First run** onboards you: currency, income sources, recurring expenses and loan dues, and a savings rule (either a minimum balance to never dip below, or a percentage of income to set aside). It saves your answers to `~/.finflow/profile.json`, outside this repo, on your own machine.
 
 **Every run after that** skips onboarding and acts as your advisor:
 
@@ -35,7 +35,7 @@ finflow is my savings still okay after rent this month?
 finflow update
 ```
 
-Add or remove income sources, update expenses/loan dues, or change your savings rule — without redoing onboarding.
+Add or remove income sources, update expenses/loan dues, or change your savings rule, without redoing onboarding.
 
 ## Why local-first
 
@@ -45,7 +45,7 @@ Cloning and pulling this repo never touches your data, because your data was nev
 
 See [SKILL.md](SKILL.md) for the workflow Claude follows, and `references/` for the details split by task: [schema.md](references/schema.md) (profile format), [onboarding.md](references/onboarding.md) (first-run questions), [projection.md](references/projection.md) (the cash-flow math), and [update.md](references/update.md) (editing your profile later).
 
-The projection math itself runs as real code, not an LLM doing arithmetic in-context: [`scripts/finflow.py`](scripts/finflow.py) is a small, dependency-free, deterministic engine that reads your profile and computes the day-by-day balance. Claude calls it and only adds the natural-language explanation on top — same "math engine separate from the reasoning layer" principle as the FinFlow iOS app spec this skill is paired with. You can also run it directly, no Claude required:
+The projection math itself runs as real code, not an LLM doing arithmetic in-context: [`scripts/finflow.py`](scripts/finflow.py) is a small, dependency-free, deterministic engine that reads your profile and computes the day-by-day balance. Claude calls it and only adds the natural-language explanation on top, following the same "math engine separate from the reasoning layer" principle as the FinFlow iOS app spec this skill is paired with. You can also run it directly, no Claude required:
 
 ```bash
 python3 ~/.claude/skills/finflow/scripts/finflow.py show

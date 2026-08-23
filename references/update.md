@@ -5,7 +5,7 @@ Runs when the user calls `finflow update` (or says "update my profile" /
 See [schema.md](schema.md) for the fields being edited.
 
 1. Load the existing profile.
-2. Ask only for what's changing — don't re-run full
+2. Ask only for what's changing. Don't re-run full
    [onboarding](onboarding.md):
    - Add/remove an income source.
    - Add/edit/remove an expense-or-loan-due entry.

@@ -2,7 +2,7 @@
 
 This is the math the advisor runs on every question, using the profile
 described in [schema.md](schema.md). No AI reasoning should override these
-numbers — only explain them.
+numbers, only explain them.
 
 ```
 1. Pick a horizon: default 30 days for a general check-in, up to 90 days
@@ -11,7 +11,7 @@ numbers — only explain them.
 2. Starting from today, walk forward day by day. For each day:
    - Add any income entries whose recurrence lands on that day.
    - Subtract any expense entries (fixed or variable-as-estimate) whose
-     recurrence lands on that day — except entries whose `endDate` (see
+     recurrence lands on that day, except entries whose `endDate` (see
      schema.md) has already passed as of that day; a paid-off installment
      loan stops recurring after its final payment.
    - Running balance = previous day's balance + today's net.
@@ -50,7 +50,7 @@ date where the projected balance would dip below the savings rule.
 
 Some income/expense entries carry a `currency` different from the
 profile's default `currency` (see
-[schema.md](schema.md#field-notes)) — e.g. a foreign-client income paid in
+[schema.md](schema.md#field-notes)), e.g. a foreign-client income paid in
 USD while the profile's default is PHP. Never store a converted amount;
 convert only at the moment of projection:
 
