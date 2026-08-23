@@ -44,3 +44,11 @@ Cloning and pulling this repo never touches your data, because your data was nev
 ## How it works
 
 See [SKILL.md](SKILL.md) for the workflow Claude follows, and `references/` for the details split by task: [schema.md](references/schema.md) (profile format), [onboarding.md](references/onboarding.md) (first-run questions), [projection.md](references/projection.md) (the cash-flow math), and [update.md](references/update.md) (editing your profile later).
+
+The projection math itself runs as real code, not an LLM doing arithmetic in-context: [`scripts/finflow.py`](scripts/finflow.py) is a small, dependency-free, deterministic engine that reads your profile and computes the day-by-day balance. Claude calls it and only adds the natural-language explanation on top — same "math engine separate from the reasoning layer" principle as the FinFlow iOS app spec this skill is paired with. You can also run it directly, no Claude required:
+
+```bash
+python3 ~/.claude/skills/finflow/scripts/finflow.py show
+python3 ~/.claude/skills/finflow/scripts/finflow.py project --days 30 --balance 3000
+python3 ~/.claude/skills/finflow/scripts/finflow.py afford --cost 9000 --deadline 2026-10-01 --balance 3000
+```

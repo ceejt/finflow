@@ -69,19 +69,44 @@ profile.
    via `finflow update`.
 
 3. **Profile found, plain `finflow` call → act as advisor.** Load the
-   profile, then:
+   profile, then run the projection **by calling `scripts/finflow.py`**
+   (see below) rather than computing the day-by-day balance by hand — the
+   script is a deterministic, tested implementation of the algorithm in
+   [references/projection.md](references/projection.md); use it as the
+   arithmetic source of truth and add only the natural-language
+   explanation on top.
    - If the user asked a specific question (e.g. "can I buy a ₱9,000 plane
-     ticket next week?"), run the cash-flow projection
-     ([references/projection.md](references/projection.md)) over the
-     relevant horizon and answer directly: yes/no/best window,
-     plus the reasoning (projected balance on that date, upcoming loan
-     dues nearby, distance from the savings safety buffer).
-   - If the user gave no specific question, project the next 30 days,
-     summarize upcoming loan/bill dues, and flag any date where the
-     projected balance would dip below the savings rule.
+     ticket next week?"), run `finflow.py afford --cost ... [--deadline
+     ...] [--balance ...] [--rate CUR=RATE ...]` and turn its output into
+     a plain-language answer: yes/no/best window, plus the reasoning
+     (projected balance on that date, upcoming loan dues nearby, distance
+     from the savings safety buffer).
+   - If the user gave no specific question, run `finflow.py project
+     --days 30 [--balance ...] [--rate CUR=RATE ...]`, summarize upcoming
+     loan/bill dues from its output, and flag any `[BELOW BUFFER]` day.
    - Never let the profile's declared safety buffer be silently ignored —
-     any purchase recommendation must keep `projected_balance - cost >=
-     safety_buffer` on the recommended date.
+     the script already enforces `projected_balance - cost >=
+     safety_buffer`; don't override or second-guess its arithmetic.
+   - The script needs a starting balance (`--balance`) to give absolute
+     numbers — ask the user for their current balance if they haven't
+     given one recently, or fall back to a relative/directional answer
+     (`--balance 0`) and say so explicitly.
+
+### Running the script
+
+```
+python3 scripts/finflow.py show
+python3 scripts/finflow.py project --days 30 --balance 3000 [--start YYYY-MM-DD] [--rate USD=57]
+python3 scripts/finflow.py afford --cost 9000 [--deadline YYYY-MM-DD] --balance 3000 [--rate USD=57]
+```
+
+- `--rate CURRENCY=RATE` (repeatable) is required for every foreign
+  currency present among the entries that fall inside the projection
+  window (see [references/projection.md](references/projection.md#cross-currency-entries))
+  — the script will error out naming exactly which rate is missing rather
+  than silently guessing. Get the rate live or ask the user.
+- Pure stdlib, no dependencies, no network calls of its own. It only
+  reads `~/.finflow/profile.json` — it never writes to it.
 
 4. **`finflow update`** (or the user says "update my profile" / "add an
    expense" / etc.) → follow [references/update.md](references/update.md).
