@@ -43,3 +43,23 @@ nearby due dates that are relevant.
 
 Project the next 30 days, summarize upcoming loan/bill dues, and flag any
 date where the projected balance would dip below the savings rule.
+
+## Cross-currency entries
+
+Some income/expense entries carry a `currency` different from the
+profile's default `currency` (see
+[schema.md](schema.md#field-notes)) — e.g. a foreign-client income paid in
+USD while the profile's default is PHP. Never store a converted amount;
+convert only at the moment of projection:
+
+1. Before running the projection (step 1 above), get the current
+   conversion rate for each foreign currency present in `income`/
+   `expenses` to the profile's default `currency`. Ask the user for the
+   rate if it can't be looked up live, and always state which rate was
+   used and as of when in the final answer.
+2. Convert that entry's `amount` to the default currency using the rate,
+   then run the rest of the projection normally in the default currency.
+3. Flag the conversion explicitly in the response (e.g. "XGrowth salary:
+   $240 → ₱13,680 at 57/USD") so the user can see the assumption, since
+   exchange rates drift and this is the one place in FinFlow where a
+   number isn't purely local.

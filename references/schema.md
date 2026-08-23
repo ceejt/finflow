@@ -13,8 +13,16 @@ skill's own directory. See SKILL.md for why.
     {
       "label": "InstaCode salary",
       "amount": 25000,
+      "currency": "PHP",
       "recurrence": "monthly",
       "nextDate": "2026-09-01"
+    },
+    {
+      "label": "XGrowth salary",
+      "amount": 240,
+      "currency": "USD",
+      "recurrence": "biweekly",
+      "nextDate": "2026-08-31"
     }
   ],
   "expenses": [
@@ -54,5 +62,13 @@ skill's own directory. See SKILL.md for why.
   equivalent from this when projecting; see
   [projection.md](projection.md)). Only one of `minBalance` /
   `percentOfIncome` is populated depending on mode; the other stays `null`.
-- Amounts are plain numbers in the profile's `currency`, no symbols.
+- Amounts are plain numbers, no symbols.
+- `income[].currency` / `expenses[].currency`: each entry stores its own
+  native currency (e.g. a foreign-client income source paid in USD while
+  the profile's default `currency` is PHP). Do not convert amounts before
+  saving. Conversion to the profile's default `currency` happens only at
+  query time — see [projection.md](projection.md#cross-currency-entries) —
+  so the stored number always reflects what was actually earned/owed, not
+  a stale converted snapshot. If an entry's `currency` is omitted, it
+  defaults to the profile's top-level `currency`.
 - Dates are `YYYY-MM-DD`.

@@ -49,7 +49,11 @@ repo means:
   share the file themselves.
 - No network calls are ever made to store, sync, or back up the profile.
   Reasoning over the data is the whole feature; persistence is strictly
-  local.
+  local. The one exception is a live exchange-rate lookup for entries in a
+  currency other than the profile's default (see
+  [references/projection.md](references/projection.md#cross-currency-entries))
+  — that is a public, read-only rate fetch, never a transmission of the
+  user's financial data.
 
 If `~/.finflow/` does not exist, create it (`mkdir -p`) before writing the
 profile.
