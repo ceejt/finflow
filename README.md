@@ -43,4 +43,4 @@ Cloning and pulling this repo never touches your data, because your data was nev
 
 ## How it works
 
-See [SKILL.md](SKILL.md) for the workflow Claude follows, and [references/spec.md](references/spec.md) for the full profile schema and the cash-flow projection algorithm (project balance day by day from income/expenses, check against your savings buffer, find safe windows for a purchase).
+See [SKILL.md](SKILL.md) for the workflow Claude follows, and `references/` for the details split by task: [schema.md](references/schema.md) (profile format), [onboarding.md](references/onboarding.md) (first-run questions), [projection.md](references/projection.md) (the cash-flow math), and [update.md](references/update.md) (editing your profile later).

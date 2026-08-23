@@ -23,10 +23,12 @@ uses it to project cash flow and answer real questions: afford this now?
 when's the safest window to buy? will this loan due date and this purchase
 collide?
 
-Full profile schema, onboarding question set, and the cash-flow projection
-algorithm live in [references/spec.md](references/spec.md). Read it before
-doing anything below — it is the source of truth for field names and the
-math.
+Detailed guidance is split by task — read only what the current call needs:
+
+- [references/schema.md](references/schema.md) — the profile JSON schema (source of truth for field names)
+- [references/onboarding.md](references/onboarding.md) — first-run question flow
+- [references/projection.md](references/projection.md) — cash-flow projection algorithm
+- [references/update.md](references/update.md) — editing an existing profile
 
 ## The one hard rule: profile location
 
@@ -56,21 +58,18 @@ profile.
 
 1. **Check for an existing profile.** Look for `~/.finflow/profile.json`.
 
-2. **No profile found → onboarding.** Ask the onboarding questions in
-   [references/spec.md](references/spec.md#onboarding-questions), one topic
-   at a time (income, then expenses/loan dues, then savings rule, then
-   currency/locale). Don't demand every field up front if the user only has
-   partial info — a single income source and rough expenses is enough to
-   start; more can be added later via `finflow update`. Write the answers
-   to `~/.finflow/profile.json` in the schema defined in the spec. Confirm
-   the file was created and give a one-line summary of what was saved.
+2. **No profile found → onboarding.** Follow
+   [references/onboarding.md](references/onboarding.md). Don't demand every
+   field up front if the user only has partial info — a single income
+   source and rough expenses is enough to start; more can be added later
+   via `finflow update`.
 
 3. **Profile found, plain `finflow` call → act as advisor.** Load the
    profile, then:
    - If the user asked a specific question (e.g. "can I buy a ₱9,000 plane
      ticket next week?"), run the cash-flow projection
-     (spec: [Cash-flow projection](references/spec.md#cash-flow-projection))
-     over the relevant horizon and answer directly: yes/no/best window,
+     ([references/projection.md](references/projection.md)) over the
+     relevant horizon and answer directly: yes/no/best window,
      plus the reasoning (projected balance on that date, upcoming loan
      dues nearby, distance from the savings safety buffer).
    - If the user gave no specific question, project the next 30 days,
@@ -81,12 +80,7 @@ profile.
      safety_buffer` on the recommended date.
 
 4. **`finflow update`** (or the user says "update my profile" / "add an
-   expense" / etc.) → load the existing profile, ask only for what's
-   changing (add/remove an income source, add/edit/remove an
-   expense-or-loan-due entry, change the savings rule, change
-   currency/locale), then rewrite `~/.finflow/profile.json`. Do not re-run
-   full onboarding. Confirm what changed with a short diff-style summary
-   ("added: Maya loan due, ₱3,500/month on the 15th").
+   expense" / etc.) → follow [references/update.md](references/update.md).
 
 5. **Never commit the profile.** If this skill folder is ever inside a git
    repo the user is committing from, and `~/.finflow/` is somehow not
@@ -96,4 +90,5 @@ profile.
 ## Verification
 
 After writing or updating the profile, read it back and confirm it parses
-as valid JSON and matches the schema in the spec before reporting success.
+as valid JSON and matches [references/schema.md](references/schema.md)
+before reporting success.
