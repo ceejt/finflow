@@ -52,3 +52,9 @@ python3 ~/.claude/skills/finflow/scripts/finflow.py show
 python3 ~/.claude/skills/finflow/scripts/finflow.py project --days 30 --balance 3000
 python3 ~/.claude/skills/finflow/scripts/finflow.py afford --cost 9000 --deadline 2026-10-01 --balance 3000
 ```
+
+Run the test suite (stdlib `unittest`, no dependencies):
+
+```bash
+python3 ~/.claude/skills/finflow/scripts/test_finflow.py
+```
